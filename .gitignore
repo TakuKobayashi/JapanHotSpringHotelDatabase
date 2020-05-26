@@ -144,3 +144,5 @@ dist
 
 ### Storybook ###
 storybook-static
+
+dist/*.js
