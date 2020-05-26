@@ -1,6 +1,6 @@
 declare namespace glFunctions {
   interface global {
-    doGet(): void;
+    doGet(e: any): any;
   }
 }
 
