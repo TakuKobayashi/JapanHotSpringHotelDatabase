@@ -3,9 +3,7 @@ const GasPlugin = require('gas-webpack-plugin');
 const Es3ifyPlugin = require('es3ify-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
   devtool: 'inline-source-map',
-  context: __dirname,
   entry: {
     main: path.resolve(__dirname, 'src', 'index.ts')
   },
@@ -20,7 +18,7 @@ module.exports = {
     rules: [
       {
         test: /\.[tj]s$/,
-        loader: 'babel-loader'
+        loader: 'awesome-typescript-loader'
       }
     ]
   },
