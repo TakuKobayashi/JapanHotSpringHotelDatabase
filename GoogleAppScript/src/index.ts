@@ -7,11 +7,14 @@ global.doGet = (e: any) => {
     const dataRange = sheet.getDataRange();
     const data = dataRange.getValues();
     for (let row = 1; row < data.length; ++row) {
-      const sheetData = {};
+      const sheetData: { [s: string]: any } = {};
       const keys = data[0];
       for (let column = 0; column < keys.length; ++column) {
         sheetData[keys[column]] = data[row][column];
       }
+      const responses = convertGeocode(sheetData);
+      sheetData.lat = responses[0].geometry.location.lat
+      sheetData.lon = responses[0].geometry.location.lng
       resultJsonObjects.push(sheetData);
     }
     resultObject[sheet.getSheetName()] = resultJsonObjects;
@@ -23,3 +26,11 @@ global.doGet = (e: any) => {
   jsonOut.setContent(JSON.stringify(resultObject));
   return jsonOut;
 };
+
+function convertGeocode(sheetData: any): any{
+  const geocoder = Maps.newGeocoder()
+  geocoder.setLanguage('ja')
+  const responses = geocoder.geocode(sheetData.address);
+  Logger.log(responses);
+  return responses;
+}
