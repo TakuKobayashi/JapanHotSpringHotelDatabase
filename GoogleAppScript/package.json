@@ -7,11 +7,13 @@
     "build": "webpack",
     "build:production": "webpack --mode production",
     "build:development": "webpack --mode development",
-    "deploy": "yarn run build:production && clasp push",
+    "push": "yarn run build:production && clasp push",
     "watch": "watch 'yarn run build && yarn run push' src/",
     "format": "prettier --config .prettierrc --write 'src/**/*.{ts,js}'",
     "clasp": "clasp",
-    "push": "clasp push"
+    "deploy": "yarn run push && clasp deploy",
+    "open": "clasp open",
+    "open:webapp": "clasp open --webapp"
   },
   "dependencies": {},
   "devDependencies": {
