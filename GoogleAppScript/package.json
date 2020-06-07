@@ -6,8 +6,8 @@
   "scripts": {
     "build": "webpack",
     "build:development": "webpack --mode development",
-    "deploy": "npm run build && clasp push",
-    "watch": "watch 'npm run build && npm run push' src/",
+    "deploy": "yarn run build && clasp push",
+    "watch": "watch 'yarn run build && yarn run push' src/",
     "format": "prettier --config .prettierrc --write 'src/**/*.{ts,js}'",
     "clasp": "clasp",
     "push": "clasp push"
