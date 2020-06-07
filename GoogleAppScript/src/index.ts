@@ -5,7 +5,7 @@ global.doGet = (e: any) => {
   for (const sheet of targetSpreadSheet.getSheets()) {
     const resultJsonObjects = [];
     const dataRange = sheet.getDataRange();
-    console.log(dataRange.getWidth());
+    console.log(dataRange.getWidth().toString());
     const data = dataRange.getValues();
     for (let row = 1; row < data.length; ++row) {
       const sheetData = {};
