@@ -32,5 +32,5 @@ function convertGeocode(sheetData: any): any{
   geocoder.setLanguage('ja')
   const responses = geocoder.geocode(sheetData.address);
   Logger.log(responses);
-  return responses;
+  return responses.results;
 }
