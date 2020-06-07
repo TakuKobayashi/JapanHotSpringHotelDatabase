@@ -1,9 +1,11 @@
 global.doGet = (e: any) => {
-  const ss = SpreadsheetApp.openById("1XsetLCeR4-Q1ntWFRFAWnuXhZK3C23RQgWBTTs7eFW0");
-  console.log(ss.getName())
-  for(const sheet of ss.getSheets()){
+  const targetSpreadSheet = SpreadsheetApp.openById("1XsetLCeR4-Q1ntWFRFAWnuXhZK3C23RQgWBTTs7eFW0");
+  console.log(targetSpreadSheet.getName())
+  for(const sheet of targetSpreadSheet.getSheets()){
+    const dataRange  = sheet.getDataRange();
     console.log(sheet.getSheetName());
-    console.log(sheet.getName());
+    console.log(dataRange);
+    console.log(dataRange.getValues());
   }
   //リクエストパラメータ名"text"の値を取得する
   var value;
