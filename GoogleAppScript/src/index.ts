@@ -1,10 +1,8 @@
 global.doGet = (e: any) => {
   //リクエストパラメータ名"text"の値を取得する
-  Logger.log(`Hello World`);
-  var text = e.parameter.text;
   var value;
-  if (text) {
-      value = "You say " + text;
+  if (e.parameter) {
+      value = "You say " + JSON.stringify(e.parameter);
   } else {
       value = "Please say something!";
   }
