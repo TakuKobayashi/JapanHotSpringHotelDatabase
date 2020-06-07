@@ -27,7 +27,7 @@ jobs:
       env:
         CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
         working-directory: ./GoogleAppScript
-        run: echo ${CLASPRC_JSON} >> ${{ matrix.clasprc-json-file }}
+      run: echo ${CLASPRC_JSON} >> ${{ matrix.clasprc-json-file }}
     - name: clasp login
       working-directory: ./GoogleAppScript
       run: yarn run clasp login --creds ${{ matrix.clasprc-json-file }}
