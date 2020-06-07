@@ -13,8 +13,8 @@ global.doGet = (e: any) => {
         sheetData[keys[column]] = data[row][column];
       }
       const responses = convertGeocode(sheetData);
-      sheetData.lat = responses[0].geometry.location.lat
-      sheetData.lon = responses[0].geometry.location.lng
+      sheetData.lat = responses[0].geometry.location.lat;
+      sheetData.lon = responses[0].geometry.location.lng;
       resultJsonObjects.push(sheetData);
     }
     resultObject[sheet.getSheetName()] = resultJsonObjects;
@@ -27,10 +27,9 @@ global.doGet = (e: any) => {
   return jsonOut;
 };
 
-function convertGeocode(sheetData: any): any{
-  const geocoder = Maps.newGeocoder()
-  geocoder.setLanguage('ja')
+function convertGeocode(sheetData: any): any {
+  const geocoder = Maps.newGeocoder();
+  geocoder.setLanguage('ja');
   const responses = geocoder.geocode(sheetData.address);
-  Logger.log(responses);
   return responses.results;
 }
