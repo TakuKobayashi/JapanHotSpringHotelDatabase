@@ -6,6 +6,10 @@
 
 [日本の温泉宿の情報を取得するWebAPI](https://script.google.com/macros/s/AKfycbzNpVsez5MsWucHIQuFDz-lYaqHeol2L0ycuxPNqXU/exec)
 
+WebAPIとして取得する元となっているGoogle Spread Sheetはこちら(随時更新していきます)
+
+[日本の温泉宿の情報](https://docs.google.com/spreadsheets/d/1XsetLCeR4-Q1ntWFRFAWnuXhZK3C23RQgWBTTs7eFW0/edit?usp=sharing)
+
 このとき、Versionは常に最新のHead、かつそのIdは `AKfycbzNpVsez5MsWucHIQuFDz-lYaqHeol2L0ycuxPNqXU` になる。
 Google App ScriptのWebAPIのURLは
 `https://script.google.com/macros/s/{GASのId}/exec`
