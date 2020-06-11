@@ -12,10 +12,8 @@ global.doGet = (e: any) => {
       for (let column = 0; column < keys.length; ++column) {
         sheetData[keys[column]] = data[row][column];
       }
-      const responses = convertGeocode(sheetData);
-      sheetData.lat = responses[0].geometry.location.lat;
-      sheetData.lon = responses[0].geometry.location.lng;
-      resultJsonObjects.push(sheetData);
+      const resultData = updateLatLonRowSheet(sheet, row, sheetData);
+      resultJsonObjects.push(resultData);
     }
     resultObject[sheet.getSheetName()] = resultJsonObjects;
   }
@@ -26,6 +24,17 @@ global.doGet = (e: any) => {
   jsonOut.setContent(JSON.stringify(resultObject));
   return jsonOut;
 };
+
+function updateLatLonRowSheet(sheet: any, rowNumber: number, sheetData: any): any {
+  const resultData = {...sheetData}
+  if(!sheetData.lat || !sheetData.lon){
+    const responses = convertGeocode(sheetData);
+    resultData.lat = responses[0].geometry.location.lat;
+    resultData.lon = responses[0].geometry.location.lng;
+    sheet.getRange(rowNumber + 1, 1, 1, resultData.length).setValues([resultData]);
+  }
+  return resultData;
+}
 
 function convertGeocode(sheetData: any): any {
   const geocoder = Maps.newGeocoder();
