@@ -1,6 +1,6 @@
 export function doGet(e: any): GoogleAppsScript.Content.TextOutput {
   // e.parameterでURL QueryのObejctが取得できる
-  const targetSpreadSheet = SpreadsheetApp.openById('1XsetLCeR4-Q1ntWFRFAWnuXhZK3C23RQgWBTTs7eFW0');
+  const targetSpreadSheet = SpreadsheetApp.openById(process.env.TARGET_SPREADSHEET_ID);
   const resultObject: { [s: string]: any } = {};
   for (const sheet of targetSpreadSheet.getSheets()) {
     const resultJsonObjects = [];
