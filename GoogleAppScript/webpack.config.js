@@ -12,7 +12,15 @@ module.exports = {
     filename: 'index.js'
   },
   resolve: {
-    extensions: ['.ts']
+    extensions: ['.ts', '.js']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.[tj]s$/,
+        loader: 'babel-loader'
+      }
+    ]
   },
   module: {
     rules: [
