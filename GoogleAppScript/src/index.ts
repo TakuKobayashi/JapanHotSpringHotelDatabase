@@ -13,7 +13,7 @@ global.doGet = (e: any) => {
         sheetData[keys[column]] = data[row][column];
       }
       const resultData = updateLatLonRowSheet(sheet, row, sheetData);
-      resultJsonObjects.push(resultData);
+      resultJsonObjects.push(sheetData);
     }
     resultObject[sheet.getSheetName()] = resultJsonObjects;
   }
@@ -26,14 +26,16 @@ global.doGet = (e: any) => {
 };
 
 function updateLatLonRowSheet(sheet: any, rowNumber: number, sheetData: any): any {
+  const resultData = {...sheetData}
   if(!sheetData.lat || !sheetData.lon){
     const responses = convertGeocode(sheetData);
-    sheetData.lat = responses[0].geometry.location.lat;
-    sheetData.lon = responses[0].geometry.location.lng;
-    const dataArr = Object.values(sheetData)
+    resultData.lat = responses[0].geometry.location.lat;
+    resultData.lon = responses[0].geometry.location.lng;
+    const dataArr = Object.values(resultData)
+    // spreadsheetのデータの更新
     sheet.getRange(rowNumber + 1, 1, 1, dataArr.length).setValues([dataArr]);
   }
-  return sheetData;
+  return resultData;
 }
 
 function convertGeocode(sheetData: any): any {
