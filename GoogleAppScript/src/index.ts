@@ -13,7 +13,7 @@ global.doGet = (e: any) => {
         sheetData[keys[column]] = data[row][column];
       }
       const resultData = updateLatLonRowSheet(sheet, row, sheetData);
-      resultJsonObjects.push(sheetData);
+      resultJsonObjects.push(resultData);
     }
     resultObject[sheet.getSheetName()] = resultJsonObjects;
   }
