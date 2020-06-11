@@ -22,13 +22,5 @@ module.exports = {
       }
     ]
   },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        loader: 'awesome-typescript-loader'
-      }
-    ]
-  },
   plugins: [new GasPlugin(), new Es3ifyPlugin()]
 };
