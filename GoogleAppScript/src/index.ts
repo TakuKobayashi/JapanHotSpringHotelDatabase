@@ -26,15 +26,14 @@ global.doGet = (e: any) => {
 };
 
 function updateLatLonRowSheet(sheet: any, rowNumber: number, sheetData: any): any {
-  const resultData = {...sheetData}
   if(!sheetData.lat || !sheetData.lon){
     const responses = convertGeocode(sheetData);
-    resultData.lat = responses[0].geometry.location.lat;
-    resultData.lon = responses[0].geometry.location.lng;
-    const dataArr = Object.values(resultData)
+    sheetData.lat = responses[0].geometry.location.lat;
+    sheetData.lon = responses[0].geometry.location.lng;
+    const dataArr = Object.values(sheetData)
     sheet.getRange(rowNumber + 1, 1, 1, dataArr.length).setValues([dataArr]);
   }
-  return resultData;
+  return sheetData;
 }
 
 function convertGeocode(sheetData: any): any {
