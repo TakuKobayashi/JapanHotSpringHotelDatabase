@@ -28,6 +28,7 @@ global.doGet = (e: any) => {
 function updateLatLonRowSheet(sheet: any, rowNumber: number, sheetData: any): any {
   const resultData = {...sheetData}
   if(!sheetData.lat || !sheetData.lon){
+    resultData.address = sheetData.address.normalize("NFKC")
     const responses = convertGeocode(sheetData);
     resultData.lat = responses[0].geometry.location.lat;
     resultData.lon = responses[0].geometry.location.lng;
