@@ -12,6 +12,7 @@
     "format": "prettier --config .prettierrc --write 'src/**/*.{ts,js}'",
     "clasp": "clasp",
     "deploy": "yarn run push && clasp deploy",
+    "clear:deploy": "clasp undeploy --all",
     "open": "clasp open",
     "open:webapp": "clasp open --webapp"
   },
