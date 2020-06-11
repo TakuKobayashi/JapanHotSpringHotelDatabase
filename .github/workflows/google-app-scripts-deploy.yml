@@ -23,6 +23,12 @@ jobs:
     - name: yarn install
       working-directory: ./GoogleAppScript
       run: yarn install
+    - name: Setup Google App Script .env
+      working-directory: ./GoogleAppScript
+      env:
+        TARGET_SPREADSHEET_ID: ${{ secrets.TARGET_SPREADSHEET_ID }}
+      run: |
+        echo "TARGET_SPREADSHEET_ID=${TARGET_SPREADSHEET_ID}" >> ./.env
     - name: clasp creds
       env:
         CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
