@@ -31,7 +31,7 @@ function updateLatLonRowSheet(sheet: any, rowNumber: number, sheetData: any): an
     const responses = convertGeocode(sheetData);
     resultData.lat = responses[0].geometry.location.lat;
     resultData.lon = responses[0].geometry.location.lng;
-    sheet.getRange(rowNumber + 1, 1, 1, resultData.length).setValues([resultData]);
+    sheet.getRange(rowNumber + 1, 1, 1, Object.keys(resultData).length).setValues([resultData]);
   }
   return resultData;
 }
