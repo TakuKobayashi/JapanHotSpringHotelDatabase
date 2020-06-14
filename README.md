@@ -21,7 +21,8 @@ Google App Scriptをローカルのエディタで開発できるツール [clas
 
 [clasp](https://github.com/google/clasp/) を使って、Typescript + Webpack で開発しています。
 
-【参考】
+##### 参考
+
 * [GAS のGoogle謹製CLIツール clasp](https://qiita.com/HeRo/items/4e65dcc82783b2766c03)
 * [clasp + webpackでGAS(Google App Script)のコードをTypeScriptで書く](https://wp-kyoto.net/clasp-gas-typescript-webpack/)
 * [GAS を npm パッケージ + Webpack + TypeScript で開発する](https://qiita.com/shohei_ot/items/7b26461359068a192b96)
@@ -30,7 +31,8 @@ Google App Scriptをローカルのエディタで開発できるツール [clas
 
 Google App Scriptの中身を編集して、URL を発行してJSONを返すようにしている
 
-【参考】
+##### 参考
+
 * [今から10分ではじめる Google Apps Script(GAS) で Web API公開](https://qiita.com/riversun/items/c924cfe70e16ee3fe3ba)
 
 
@@ -38,11 +40,27 @@ Google App Scriptの中身を編集して、URL を発行してJSONを返すよ�
 
 GASでSpreadsheetを操作するときの[リファレンス](https://developers.google.com/apps-script/reference/spreadsheet/sheet)はこちら
 
-【参考】
+##### 参考
+
 * [【初心者向けGAS】スプレッドシートのシートを取得する２つの方法](https://tonari-it.com/gas-spreadsheet-get-sheet/)
 
 ### Claspの自動デプロイの実装
 
 Github Actionsを修正して、pushされたら自動的にGoogle Apps Sriptに反映、公開される仕組みを作成した
 
- * [Google Apps Script のデプロイを Circle CI から行う](https://qiita.com/howdy39/items/2c21251331e011d04512)
+* [Google Apps Script のデプロイを Circle CI から行う](https://qiita.com/howdy39/items/2c21251331e011d04512)
+
+### Google Apps Script にて公開されたWebAPIをPostで実行確認する
+
+Postでデプロイしたはずだが、`curl` で実行してもWebAPIが実行されない。
+これは `curl` の仕様により、`-X POST` とするとリダイレクトがうまくいかないことによるものでした。
+そのため以下のようなコマンドを実行することで確認することができました。
+
+```
+curl -L -d '' https://script.google.com/macros/s/{deployId}/exec
+```
+
+##### 参考
+
+* [GASのdoPost関数をcurlでテストする時リダイレクトが必要なら-Xオプションを使わない](https://qiita.com/cajonito/items/9e66ef60831d51105bc0)
+
