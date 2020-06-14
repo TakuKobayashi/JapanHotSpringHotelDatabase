@@ -1,9 +1,8 @@
 function onPost(e: any): GoogleAppsScript.Content.TextOutput {
-  Logger.log("Hello onPost!" + e);
-  const jsonOut = ContentService.createTextOutput();
-  //Mime TypeをJSONに設定
-  jsonOut.setMimeType(ContentService.MimeType.JSON);
-  //JSONテキストをセットする
-  jsonOut.setContent(JSON.stringify(resultObject));
-  return jsonOut;
+  Logger.log(e.parameter);
+  Logger.log(e.postData.getDataAsString());
+  const output = ContentService.createTextOutput();
+  output.setMimeType(ContentService.MimeType.JSON);
+  output.setContent(JSON.stringify({ message: "success!" }));
+  return output;
 }
