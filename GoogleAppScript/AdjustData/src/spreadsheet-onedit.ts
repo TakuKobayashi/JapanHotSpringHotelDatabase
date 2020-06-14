@@ -8,16 +8,16 @@ function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
 
   //編集されたセルの値を取得したい場合
   Logger.log(event.value);
-  Logger.log(event.range);
+  if(event.range){
+    Logger.log(event.range.getColumn().toString());
+    Logger.log(event.range.getRow().toString());
+    Logger.log(event.range.getWidth().toString());
+    Logger.log(event.range.getHeight().toString());
+    Logger.log(event.range.getValues());
+  }
   
   //編集前のセルの値を取得したい場合
   Logger.log(event.oldValue);
-}
-
-function onChange(event: GoogleAppsScript.Events.SheetsOnChange): void {
-  Logger.log("Hello onChange!" + event);
-  //Spreadsheet名を取得する場合
-  Logger.log(event.changeType);
 }
 
 function updateLatLonRowSheet(sheet: any, rowNumber: number, sheetData: any): any {
