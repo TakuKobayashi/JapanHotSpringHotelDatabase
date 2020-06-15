@@ -14,17 +14,15 @@ function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
     const keyNumberPairs = getKeyNumberPairs(targetSheet);
     Logger.log(keyNumberPairs);
 
+    const targetRange = event.range;
     // データを自動整形
-    const data = event.range.getValues();
-    for(let row = 0; row < data.length;++row){
-      for(let column = 0;column < data[row];++column){
-        if(data[row][column]){
-          data[row][column] = normalize(data[row][column].toString())
-        }
-      }
-    }
-    event.range.setValues(data);
+    const results = normalizeAll(targetRange);
+    targetRange.setValues(results);
 
+    // 変更箇所に住所の項目がある場合のみ実行する
+    if(targetRange.getColumn() <= keyNumberPairs.address && keyNumberPairs.address < targetRange.getColumn() + targetRange.getWidth()){
+      updateLatLon(targetSheet, targetRange.getRow(), targetRange.getHeight(), keyNumberPairs);
+    }
     Logger.log(event.range.getColumn().toString());
     Logger.log(event.range.getRow().toString());
     Logger.log(event.range.getWidth().toString());
@@ -47,6 +45,36 @@ function getKeyNumberPairs(targetSheet: GoogleAppsScript.Spreadsheet.Sheet): { [
     }
   }
   return keyNumberPairs;
+}
+
+// 住所が入力されていれば自動的に緯度経度も入力されるようにする
+function updateLatLon(targetSheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, height: number,keyNumberPairs: { [s: string]: number ): void {
+  // 変更がある行全部の情報を取得する
+  const targetRowsRange = targetSheet.getRange(row, 1, height, targetSheet.getLastColumn())
+  const targetRowsValues = targetRowsRange.getValues();
+  for(let r = 0;r < targetRowsValues.length;++r){
+    const addressIndex = keyNumberPairs.address - 1;
+    const latIndex = keyNumberPairs.lat - 1;
+    const lonIndex = keyNumberPairs.lon - 1;
+    if(targetRowsValues[r][addressIndex] && (!targetRowsValues[r][latIndex] || !targetRowsValues[r][lonIndex])){
+      const geocodeResponses = convertGeocode(targetRowsValues[r][addressIndex]);
+      targetRowsValues[r][latIndex] = geocodeResponses[0].geometry.location.lat;
+      targetRowsValues[r][lonIndex] = geocodeResponses[0].geometry.location.lng;
+    }
+  }
+  targetRowsRange.setValues(targetRowsValues);
+}
+
+function normalizeAll(range: GoogleAppsScript.Spreadsheet.Range): any[][] {
+  const data = range.getValues();
+  for(let row = 0; row < data.length;++row){
+    for(let column = 0;column < data[row];++column){
+      if(data[row][column]){
+        data[row][column] = normalize(data[row][column].toString())
+      }
+    }
+  }
+  return data;
 }
 
 function normalize(word: string): string {
