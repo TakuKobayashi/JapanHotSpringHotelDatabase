@@ -22,8 +22,10 @@ function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
     const results = normalizeAll(targetRange);
     targetRange.setValues(results);
 
+    const columnRangeMin = targetRange.getColumn();
+    const columnRangeMax = targetRange.getColumn() + targetRange.getWidth();
     // 変更箇所に住所の項目がある場合のみ実行する
-    if (targetRange.getColumn() <= keyNumberPairs.address && keyNumberPairs.address < targetRange.getColumn() + targetRange.getWidth()) {
+    if (columnRangeMin <= keyNumberPairs.address && keyNumberPairs.address < columnRangeMax) {
       updateLatLon(targetSheet, targetRange.getRow(), targetRange.getHeight(), keyNumberPairs);
     }
     Logger.log(event.range.getColumn().toString());
