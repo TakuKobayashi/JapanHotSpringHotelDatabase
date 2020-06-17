@@ -2,20 +2,10 @@
 const KEYS_COLUMN_ROW = 1;
 
 function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
-  Logger.log('Hello onEdit!');
-  Logger.log(event.triggerUid);
-  Logger.log(event.user);
-  Logger.log(event.authMode);
-  //Spreadsheet名を取得する場合
-  Logger.log(event.source.getName()); //←sourceは、"spreadsheet"オブジェクトです
-
-  //編集されたセルの値を取得したい場合
-  Logger.log(event.value);
   if (event.range) {
     // getRange(row, column, numRows)
     const targetSheet = event.range.getSheet();
     const keyNumberPairs = getKeyNumberPairs(targetSheet);
-    Logger.log(keyNumberPairs);
 
     const targetRange = event.range;
     // データを自動整形
@@ -28,11 +18,6 @@ function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
     if (columnRangeMin <= keyNumberPairs.address && keyNumberPairs.address < columnRangeMax) {
       updateLatLon(targetSheet, targetRange.getRow(), targetRange.getHeight(), keyNumberPairs);
     }
-    Logger.log(event.range.getColumn().toString());
-    Logger.log(event.range.getRow().toString());
-    Logger.log(event.range.getWidth().toString());
-    Logger.log(event.range.getHeight().toString());
-    Logger.log(event.range.getValues());
   }
 
   //編集前のセルの値を取得したい場合
