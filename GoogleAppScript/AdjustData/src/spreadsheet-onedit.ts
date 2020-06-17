@@ -12,23 +12,42 @@ function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
     const results = normalizeAll(targetRange);
     targetRange.setValues(results);
 
+    // 変更がある行全部の情報を取得する
+    const targetRowsRange = targetSheet.getRange(targetRange.getRow(), 1, targetRange.getHeight(), targetSheet.getLastColumn());
+    const targetRowsValues = targetRowsRange.getValues();
+
     const columnRangeMin = targetRange.getColumn();
     const columnRangeMax = targetRange.getColumn() + targetRange.getWidth();
     // 変更箇所に住所の項目がある場合のみ実行する
     if (columnRangeMin <= keyNumberPairs.address && keyNumberPairs.address < columnRangeMax) {
-      updateLatLon(targetSheet, targetRange.getRow(), targetRange.getHeight(), keyNumberPairs);
+      updateLatLon(targetRowsRange, targetRowsValues, keyNumberPairs);
+    }
+    updateAutoIncreamentId(targetRowsRange, targetRowsValues, keyNumberPairs, targetRange.getRow());
+  }
+}
+
+function updateAutoIncreamentId(
+  targetRowsRange: GoogleAppsScript.Spreadsheet.Range,
+  targetRowsValues: any[][],
+  keyNumberPairs: { [s: string]: number },
+  startRow: number,
+) {
+  const idIndex = keyNumberPairs.id - 1;
+  for (let r = 0; r < targetRowsValues.length; ++r) {
+    if (!targetRowsValues[r].some((rowValue) => rowValue)) {
+      continue;
+    }
+    if (!targetRowsValues[r][idIndex]) {
+      targetRowsValues[r][idIndex] = startRow + r - 1;
     }
   }
-
-  //編集前のセルの値を取得したい場合
-  Logger.log(event.oldValue);
+  targetRowsRange.setValues(targetRowsValues);
 }
 
 function getKeyNumberPairs(targetSheet: GoogleAppsScript.Spreadsheet.Sheet): { [s: string]: number } {
   const keyNumberPairs: { [s: string]: number } = {};
   const headerRange = targetSheet.getRange(KEYS_COLUMN_ROW, 1, 1, targetSheet.getLastColumn());
   const headerValues = headerRange.getValues();
-  Logger.log(headerValues);
   if (headerValues[0]) {
     for (let i = 0; i < headerValues[0].length; ++i) {
       keyNumberPairs[headerValues[0][i]] = i + 1;
@@ -39,14 +58,10 @@ function getKeyNumberPairs(targetSheet: GoogleAppsScript.Spreadsheet.Sheet): { [
 
 // 住所が入力されていれば自動的に緯度経度も入力されるようにする
 function updateLatLon(
-  targetSheet: GoogleAppsScript.Spreadsheet.Sheet,
-  row: number,
-  height: number,
+  targetRowsRange: GoogleAppsScript.Spreadsheet.Range,
+  targetRowsValues: any[][],
   keyNumberPairs: { [s: string]: number },
 ): void {
-  // 変更がある行全部の情報を取得する
-  const targetRowsRange = targetSheet.getRange(row, 1, height, targetSheet.getLastColumn());
-  const targetRowsValues = targetRowsRange.getValues();
   for (let r = 0; r < targetRowsValues.length; ++r) {
     const addressIndex = keyNumberPairs.address - 1;
     const latIndex = keyNumberPairs.lat - 1;
