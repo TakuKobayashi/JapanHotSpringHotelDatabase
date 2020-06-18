@@ -9,39 +9,41 @@ function onEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void {
 
     const targetRange = event.range;
     // データを自動整形
-    const results = normalizeAll(targetRange);
-    targetRange.setValues(results);
+    const updatedRangeValues = normalizeAll(targetRange);
 
     // 変更がある行全部の情報を取得する
     const targetRowsRange = targetSheet.getRange(targetRange.getRow(), 1, targetRange.getHeight(), targetSheet.getLastColumn());
     const targetRowsValues = targetRowsRange.getValues();
+    let updatedRowsRangeValues = updateAutoIncreamentId(targetRowsValues, keyNumberPairs, targetRange.getRow());
 
     const columnRangeMin = targetRange.getColumn();
     const columnRangeMax = targetRange.getColumn() + targetRange.getWidth();
     // 変更箇所に住所の項目がある場合のみ実行する
     if (columnRangeMin <= keyNumberPairs.address && keyNumberPairs.address < columnRangeMax) {
-      updateLatLon(targetRowsRange, targetRowsValues, keyNumberPairs);
+      updatedRowsRangeValues = updateLatLon(updatedRowsRangeValues, keyNumberPairs);
     }
-    updateAutoIncreamentId(targetRowsRange, targetRowsValues, keyNumberPairs, targetRange.getRow());
+
+    if (targetRange != updatedRangeValues) {
+      targetRange.setValues(updatedRangeValues);
+    }
+    if (targetRowsValues != updatedRowsRangeValues) {
+      targetRowsRange.setValues(updatedRowsRangeValues);
+    }
   }
 }
 
-function updateAutoIncreamentId(
-  targetRowsRange: GoogleAppsScript.Spreadsheet.Range,
-  targetRowsValues: any[][],
-  keyNumberPairs: { [s: string]: number },
-  startRow: number,
-) {
+function updateAutoIncreamentId(targetRowsValues: any[][], keyNumberPairs: { [s: string]: number }, startRow: number) {
+  const updateTargetRowsValues = [...targetRowsValues];
   const idIndex = keyNumberPairs.id - 1;
-  for (let r = 0; r < targetRowsValues.length; ++r) {
-    if (!targetRowsValues[r].some((rowValue) => rowValue)) {
+  for (let r = 0; r < updateTargetRowsValues.length; ++r) {
+    if (!updateTargetRowsValues[r].some((rowValue) => rowValue)) {
       continue;
     }
-    if (!targetRowsValues[r][idIndex]) {
-      targetRowsValues[r][idIndex] = startRow + r - 1;
+    if (!updateTargetRowsValues[r][idIndex]) {
+      updateTargetRowsValues[r][idIndex] = startRow + r - 1;
     }
   }
-  targetRowsRange.setValues(targetRowsValues);
+  return updateTargetRowsValues;
 }
 
 function getKeyNumberPairs(targetSheet: GoogleAppsScript.Spreadsheet.Sheet): { [s: string]: number } {
@@ -57,27 +59,24 @@ function getKeyNumberPairs(targetSheet: GoogleAppsScript.Spreadsheet.Sheet): { [
 }
 
 // 住所が入力されていれば自動的に緯度経度も入力されるようにする
-function updateLatLon(
-  targetRowsRange: GoogleAppsScript.Spreadsheet.Range,
-  targetRowsValues: any[][],
-  keyNumberPairs: { [s: string]: number },
-): void {
-  for (let r = 0; r < targetRowsValues.length; ++r) {
+function updateLatLon(targetRowsValues: any[][], keyNumberPairs: { [s: string]: number }): void {
+  const updateTargetRowsValues = [...targetRowsValues];
+  for (let r = 0; r < updateTargetRowsValues.length; ++r) {
     const addressIndex = keyNumberPairs.address - 1;
     const latIndex = keyNumberPairs.lat - 1;
     const lonIndex = keyNumberPairs.lon - 1;
     const postalCodeIndex = keyNumberPairs.postal_code - 1;
-    if (targetRowsValues[r][addressIndex] && (!targetRowsValues[r][latIndex] || !targetRowsValues[r][lonIndex])) {
-      const geocodeResponses = convertGeocode(targetRowsValues[r][addressIndex]);
-      targetRowsValues[r][latIndex] = geocodeResponses[0].geometry.location.lat;
-      targetRowsValues[r][lonIndex] = geocodeResponses[0].geometry.location.lng;
+    if (updateTargetRowsValues[r][addressIndex] && (!updateTargetRowsValues[r][latIndex] || !updateTargetRowsValues[r][lonIndex])) {
+      const geocodeResponses = convertGeocode(updateTargetRowsValues[r][addressIndex]);
+      updateTargetRowsValues[r][latIndex] = geocodeResponses[0].geometry.location.lat;
+      updateTargetRowsValues[r][lonIndex] = geocodeResponses[0].geometry.location.lng;
       const postal_code_component = geocodeResponses[0].address_components.find((component) => component.types.includes('postal_code'));
       if (postal_code_component) {
-        targetRowsValues[r][postalCodeIndex] = postal_code_component.long_name;
+        updateTargetRowsValues[r][postalCodeIndex] = postal_code_component.long_name;
       }
     }
   }
-  targetRowsRange.setValues(targetRowsValues);
+  return updateTargetRowsValues;
 }
 
 function normalizeAll(range: GoogleAppsScript.Spreadsheet.Range): any[][] {
@@ -85,15 +84,11 @@ function normalizeAll(range: GoogleAppsScript.Spreadsheet.Range): any[][] {
   for (let row = 0; row < data.length; ++row) {
     for (let column = 0; column < data[row]; ++column) {
       if (data[row][column]) {
-        data[row][column] = normalize(data[row][column].toString());
+        data[row][column] = data[row][column].normalize('NFKC');
       }
     }
   }
   return data;
-}
-
-function normalize(word: string): string {
-  return word.normalize('NFKC');
 }
 
 function convertGeocode(address: string): any {
