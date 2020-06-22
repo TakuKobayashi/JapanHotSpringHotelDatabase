@@ -4,13 +4,13 @@
 
 今回、Google Spread Sheetの情報を全てWebAPIとしてJSONを取得できるようなAPIは以下のリンクにアクセスすることで取得することができます。
 
-[日本の温泉宿の情報を取得するWebAPI](https://script.google.com/macros/s/AKfycbzNpVsez5MsWucHIQuFDz-lYaqHeol2L0ycuxPNqXU/exec)
+[日本の温泉宿の情報を取得するWebAPI](https://script.google.com/macros/s/AKfycbwjYzpnc_C_Gtc7LbojP0qsuHECr3woy2qy5NznAVU/exec)
 
 WebAPIとして取得する元となっているGoogle Spread Sheetはこちら(随時更新していきます)
 
 [日本の温泉宿の情報](https://docs.google.com/spreadsheets/d/1XsetLCeR4-Q1ntWFRFAWnuXhZK3C23RQgWBTTs7eFW0/edit?usp=sharing)
 
-このとき、Versionは常に最新のHead、かつそのIdは `AKfycbzNpVsez5MsWucHIQuFDz-lYaqHeol2L0ycuxPNqXU` になる。
+このとき、Versionは常に最新のHead、かつそのIdは `AKfycbwjYzpnc_C_Gtc7LbojP0qsuHECr3woy2qy5NznAVU` になる。
 Google App ScriptのWebAPIのURLは
 `https://script.google.com/macros/s/{GASのId}/exec`
 となる

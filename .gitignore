@@ -145,3 +145,5 @@ public
 storybook-static
 
 **/dist/*.js
+
+webapi.js

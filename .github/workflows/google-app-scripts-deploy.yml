@@ -21,22 +21,20 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: yarn install
-      working-directory: ./GoogleAppScript/ConvertWebAPI
+      working-directory: ./GoogleAppScript
       run: yarn install
     - name: Setup Google App Script .env
-      working-directory: ./GoogleAppScript/ConvertWebAPI
-      env:
-        TARGET_SPREADSHEET_ID: ${{ secrets.TARGET_SPREADSHEET_ID }}
+      working-directory: ./GoogleAppScript
       run: |
-        echo "TARGET_SPREADSHEET_ID=${TARGET_SPREADSHEET_ID}" >> ./.env
+        echo "" >> ./.env
     - name: clasp creds
       env:
         CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
       run: echo "${CLASPRC_JSON}" >> ${{ matrix.clasprc-json-path }}
     - name: clasp deploy
-      working-directory: ./GoogleAppScript/ConvertWebAPI
+      working-directory: ./GoogleAppScript
       run: yarn run deploy
     - uses: actions/upload-artifact@v2
       with:
-        name: dist
-        path: GoogleAppScript/ConvertWebAPI/dist
+        name: src
+        path: GoogleAppScript/src

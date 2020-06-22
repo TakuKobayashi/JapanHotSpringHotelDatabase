@@ -1,8 +1,8 @@
-import { loadSpreadsheetToObjects } from './common/converter';
+import { loadSpreadsheetToObjects } from '../common/converter';
 
-export function doGet(e: any): GoogleAppsScript.Content.TextOutput {
+export function doPost(e: any): GoogleAppsScript.Content.TextOutput {
   // e.parameterでURL QueryのObejctが取得できる
-  const targetSpreadSheet = SpreadsheetApp.openById(process.env.TARGET_SPREADSHEET_ID);
+  const targetSpreadSheet = SpreadsheetApp.getActiveSpreadsheet();
   const resultObject = loadSpreadsheetToObjects(targetSpreadSheet);
   const jsonOut = ContentService.createTextOutput();
   //Mime TypeをJSONに設定

@@ -4,14 +4,15 @@
   "description": "clasp Google App Script using Typescript",
   "main": "src/index.ts",
   "scripts": {
-    "build": "webpack",
-    "build:production": "webpack --mode production",
-    "build:development": "webpack --mode development",
-    "push": "yarn run build:production && clasp push",
-    "watch": "watch 'yarn run build && yarn run push' src/",
-    "format": "prettier --config .prettierrc --write 'src/**/*.{ts,js}'",
+    "webapi:build": "webpack",
+    "webapi:build:production": "webpack --mode production",
+    "webapi:build:development": "webpack --mode development",
+    "push": "yarn run webapi:build:production && clasp push",
+    "watch": "watch 'yarn run push' src/",
+    "format": "prettier --config .prettierrc --write 'src/**/*.ts'",
     "clasp": "clasp",
     "deploy": "yarn run push && clasp deploy",
+    "undeploy": "clasp undeploy",
     "undeploy:latest": "clasp undeploy",
     "undeploy:all": "clasp undeploy --all",
     "open": "clasp open",
@@ -32,7 +33,7 @@
     "typescript": "^3.9.5",
     "watch": "^1.0.2",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.12"
   },
   "license": "MIT"
 }
