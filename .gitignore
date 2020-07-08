@@ -147,3 +147,10 @@ storybook-static
 **/dist/*.js
 
 webapi.js
+
+
+# Serverless directories
+.serverless
+
+# Webpack directories
+.webpack
