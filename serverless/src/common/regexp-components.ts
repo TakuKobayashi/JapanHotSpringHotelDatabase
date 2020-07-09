@@ -1,4 +1,4 @@
-const todoufukenList = [
+export const todoufukenList: string[] = [
   '北海道',
   '青森県',
   '岩手県',
@@ -48,6 +48,90 @@ const todoufukenList = [
   '沖縄県',
 ];
 
+export const symbolList: string[] = [
+  '[',
+  '【',
+  '】',
+  '、',
+  '。',
+  '《',
+  '》',
+  '「',
+  '」',
+  '〔',
+  '〕',
+  '・',
+  '（',
+  '）',
+  '［',
+  '］',
+  '｛',
+  '｝',
+  '！',
+  '＂',
+  '＃',
+  '＄',
+  '％',
+  '＆',
+  '＇',
+  '＊',
+  '＋',
+  '，',
+  '－',
+  '．',
+  '／',
+  '：',
+  '；',
+  '＜',
+  '＝',
+  '＞',
+  '？',
+  '＠',
+  '＼',
+  '＾',
+  '＿',
+  '｀',
+  '｜',
+  '￠',
+  '￡',
+  '￣',
+  '　',
+  '\\(',
+  '\\)',
+  '\\[',
+  '\\]',
+  '<',
+  '>',
+  '{',
+  '}',
+  ',',
+  '!',
+  '?',
+  ' ',
+  '\\.',
+  '\\-',
+  '\\+',
+  '\\',
+  '~',
+  '^',
+  '=',
+  '"',
+  '\'',
+  '&',
+  '%',
+  '$',
+  '#',
+  '_',
+  '\\/',
+  ';',
+  ':',
+  '*',
+  '‼',
+  '•',
+  '一',
+  ']',
+];
+
 export function japanAddressRegExp(flags: string = ''): RegExp {
   return new RegExp(
     '(' +
@@ -72,5 +156,21 @@ export function urlRegExp(flags: string = ''): RegExp {
 }
 
 export function phoneNumberRegExp(flags: string = ''): RegExp {
-  return new RegExp('0\\d{2,3}-\\d{1,4}-\\d{4}', flags);
+  return new RegExp('[0-9]{10,11}|\\d{2,4}-\\d{2,4}-\\d{4}', flags);
+}
+
+export function htmlCommentRegExp(flags: string = ''): RegExp {
+  return new RegExp('<!--(.*)-->', flags);
+}
+
+export function scriptTagInHtmlRegExp(flags: string = ''): RegExp {
+  return new RegExp('<script[^>]+?\/>|<script(.|\s)*?\/script>', flags);
+}
+
+export function hashtagRegExp(flags: string = ''): RegExp {
+  return new RegExp('[#＃][Ａ-Ｚａ-ｚA-Za-z一-鿆0-9０-９ぁ-ヶｦ-ﾟー]+', flags);
+}
+
+export function symbolRegExp(flags: string = ''): RegExp {
+  return new RegExp(symbolList.join(""), flags);
 }

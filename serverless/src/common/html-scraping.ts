@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isURL, normalizeURL } from './util';
 import cheerio, { CheerioStatic } from 'cheerio';
 import { uniq } from 'lodash';
-import { phoneNumberRegExp, japanAddressRegExp } from './regexp-components';
+import { phoneNumberRegExp, japanAddressRegExp, symbolList } from './regexp-components';
 const addressableUrl = require('url');
 
 export async function analize(urlString: string) {
@@ -34,13 +34,15 @@ export async function analize(urlString: string) {
   });
   const addresses: string = [];
   const texts = trimedText.split(/\s/);
+  const symbolRegExpList = symbolList.filter(symbol => symbol != '\\-')
+  const sanitizer = new RegExp(symbolRegExpList.join(""), 'g');
   for (const text of texts) {
     if (text.length > 0) {
       const regexp = japanAddressRegExp('g');
       const matchedAddresses = text.match(regexp);
       if (matchedAddresses && matchedAddresses.length > 0) {
         for (const matchedAddress of matchedAddresses) {
-          addresses.push(matchedAddress);
+          addresses.push(matchedAddress.replace(sanitizer,''));
         }
       }
     }
