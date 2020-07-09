@@ -34,15 +34,15 @@ export async function analize(urlString: string) {
   });
   const addresses: string = [];
   const texts = trimedText.split(/\s/);
-  const symbolRegExpList = symbolList.filter(symbol => symbol != '\\-')
-  const sanitizer = new RegExp(symbolRegExpList.join(""), 'g');
+  const symbolRegExpList = symbolList.filter((symbol) => symbol != '\\-');
+  const sanitizer = new RegExp(symbolRegExpList.join(''), 'g');
   for (const text of texts) {
     if (text.length > 0) {
       const regexp = japanAddressRegExp('g');
       const matchedAddresses = text.match(regexp);
       if (matchedAddresses && matchedAddresses.length > 0) {
         for (const matchedAddress of matchedAddresses) {
-          addresses.push(matchedAddress.replace(sanitizer,''));
+          addresses.push(matchedAddress.replace(sanitizer, ''));
         }
       }
     }

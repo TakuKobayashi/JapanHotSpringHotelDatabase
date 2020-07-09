@@ -116,7 +116,7 @@ export const symbolList: string[] = [
   '^',
   '=',
   '"',
-  '\'',
+  "'",
   '&',
   '%',
   '$',
@@ -164,7 +164,7 @@ export function htmlCommentRegExp(flags: string = ''): RegExp {
 }
 
 export function scriptTagInHtmlRegExp(flags: string = ''): RegExp {
-  return new RegExp('<script[^>]+?\/>|<script(.|\s)*?\/script>', flags);
+  return new RegExp('<script[^>]+?/>|<script(.|s)*?/script>', flags);
 }
 
 export function hashtagRegExp(flags: string = ''): RegExp {
@@ -172,5 +172,5 @@ export function hashtagRegExp(flags: string = ''): RegExp {
 }
 
 export function symbolRegExp(flags: string = ''): RegExp {
-  return new RegExp(symbolList.join(""), flags);
+  return new RegExp(symbolList.join(''), flags);
 }

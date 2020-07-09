@@ -20,8 +20,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/analizer', async (req, res) => {
-  const data = await analize('https://www.manzatei.com/');
-  res.json({ data: data });
+  const resultObject = {};
+  const urls = req.query.url ? [].concat.apply([], [req.query.url]) : [];
+  for(const url of urls){
+    const data = await analize(url);
+    resultObject[url] = data;
+  }
+  res.json(resultObject);
 });
 
 export const handler: APIGatewayProxyHandler = (event: APIGatewayEvent, context: Context) => {
