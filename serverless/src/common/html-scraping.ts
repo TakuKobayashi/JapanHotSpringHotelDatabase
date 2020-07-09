@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { isURL } from './util';
+import { isURL, normalizeURL } from './util';
 import cheerio, { CheerioStatic } from 'cheerio';
 import { uniq } from 'lodash';
 const addressableUrl = require('url');
 
-const todoufuken = [
+const todoufukenList = [
   '北海道',
   '青森県',
   '岩手県',
@@ -64,7 +64,7 @@ export async function analize(urlString: string) {
   $('a').each((i, elem) => {
     const aTag = $(elem).attr() || {};
     if (aTag.href) {
-      const aUrl = addressableUrl.parse(aTag.href);
+      const aUrl = addressableUrl.parse(normalizeURL(aTag.href, rootUrl.href));
       // 普通のリンク
       if (aUrl.protocol === 'http:' || aUrl.protocol === 'https:') {
         linkUrls.push(aUrl.href);
@@ -87,7 +87,7 @@ export async function analize(urlString: string) {
     if (text.length > 0) {
       const regexp = new RegExp(
         '(' +
-          todoufuken.join('|') +
+          todoufukenList.join('|') +
           ')' +
           '((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村|宮古|富良野|別府|佐伯|黒部|小諸|塩尻|玉野|周南)市|(?:余市|高市|[^市]{2,3}?)郡(?:玉村|大町|.{1,5}?)[町村]|(?:.{1,4}市)?[^町]{1,4}?区|.{1,7}?[市町村])' +
           '(.+)',
@@ -105,19 +105,7 @@ export async function analize(urlString: string) {
   $('img').each((i, elem) => {
     const imgSrc = $(elem).attr() || {};
     if (imgSrc.src) {
-      const aUrl = addressableUrl.parse(imgSrc.src);
-      // 普通のリンク
-      if (aUrl.protocol === 'http:' || aUrl.protocol === 'https:') {
-        imageUrls.push(aUrl.href);
-      } else {
-        let fullUrl = rootUrl.protocol + '//' + rootUrl.host;
-        if (aUrl.href.startsWith('/')) {
-          fullUrl = fullUrl + aUrl.href;
-        } else {
-          fullUrl = fullUrl + '/' + aUrl.href;
-        }
-        imageUrls.push(fullUrl);
-      }
+      imageUrls.push(normalizeURL(imgSrc.src, rootUrl.href));
     }
   });
   const bgUrls = $.html().match(/background[-image]*:[\s]*url\(["|\']+(.*)["|\']+\)/g);

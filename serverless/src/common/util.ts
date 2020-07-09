@@ -10,3 +10,25 @@ export function isURL(str: string): boolean {
   ); // fragment locator
   return pattern.test(str);
 }
+
+const addressableUrl = require('url');
+const path = require('path');
+export function normalizeURL(srcURLString: string, orgURLString: string): string {
+  const aUrl = addressableUrl.parse(srcURLString);
+  if (!aUrl.protocol) {
+    const rootUrl = addressableUrl.parse(orgURLString);
+    let fullUrl = '';
+    if (aUrl.href.startsWith('/')) {
+      fullUrl = rootUrl.protocol + '//' + rootUrl.host + aUrl.href;
+    } else if (aUrl.href.startsWith('./')) {
+      fullUrl = path.dirname(rootUrl.href) + '/' + path.basename(aUrl.href);
+    } else if (aUrl.href.startsWith('../')) {
+      fullUrl = path.dirname(path.dirname(rootUrl.href)) + '/' + path.basename(aUrl.href);
+    } else {
+      fullUrl = path.dirname(rootUrl.href) + '/' + aUrl.href;
+    }
+    return fullUrl;
+  } else {
+    return aUrl.href;
+  }
+}
