@@ -47,14 +47,21 @@ export async function analize(urlString: string) {
       }
     }
   }
-  const imageUrls = $.html().match(/https?:\/\/[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+(jpg|jpeg|gif|png)/g) || [];
+  const allHTML = $.html();
+  const imageUrls = allHTML.match(/https?:\/\/[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+(jpg|jpeg|gif|png)/g) || [];
   $('img').each((i, elem) => {
     const imgSrc = $(elem).attr() || {};
     if (imgSrc.src) {
       imageUrls.push(normalizeURL(imgSrc.src, rootUrl.href));
     }
   });
-  const bgUrls = $.html().match(/background[-image]*:[\s]*url\(["|\']+(.*)["|\']+\)/g);
+  const bgCSSUrls = allHTML.match(/url\(["']?([^"']*)["']?\)/g);
+  for (const bgCSSUrl of bgCSSUrls) {
+    const bgUrl = bgCSSUrl.replace(/(url\(|\)|")/g, '');
+    if (!bgUrl && bgUrl.length > 0) {
+      imageUrls.push(normalizeURL(bgUrl, rootUrl.href));
+    }
+  }
   return {
     phoneNumbers: uniq(phoneNumbers),
     addresses: uniq(addresses),
