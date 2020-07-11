@@ -17,9 +17,9 @@ export function normalizeURL(srcURLString: string, orgURLString: string): string
     } else if (aUrl.href.startsWith('/')) {
       fullUrl = rootUrl.protocol + '//' + rootUrl.host + aUrl.href;
     } else if (aUrl.href.startsWith('./')) {
-      fullUrl = path.dirname(rootUrl.href) + '/' + path.basename(aUrl.href);
+      fullUrl = path.dirname(rootUrl.href) + '/' + aUrl.href.replace('./', '');
     } else if (aUrl.href.startsWith('../')) {
-      fullUrl = path.dirname(path.dirname(rootUrl.href)) + '/' + path.basename(aUrl.href);
+      fullUrl = path.dirname(path.dirname(rootUrl.href)) + '/' + aUrl.href.replace('../', '');
     } else {
       fullUrl = path.dirname(rootUrl.href) + '/' + aUrl.href;
     }
