@@ -14,7 +14,8 @@ export async function analize(urlString: string) {
   const mailAddresses = [];
   $('a').each((i, elem) => {
     const aTag = $(elem).attr() || {};
-    if (aTag.href) {
+    // javascript:void(0) みたいなリンクは弾く
+    if (aTag.href && !aTag.href.startsWith("javascript:")) {
       const aUrl = addressableUrl.parse(normalizeURL(aTag.href, rootUrl.href));
       // 普通のリンク
       if (aUrl.protocol === 'http:' || aUrl.protocol === 'https:') {
@@ -47,18 +48,32 @@ export async function analize(urlString: string) {
       }
     }
   }
+  const cssUrls: string[] = [];
+  const jsUrls: string[] = [];
   const allHTML = $.html();
+  $('link').each((i, elem) => {
+    const cssAttr = $(elem).attr() || {};
+    if (cssAttr.href && cssAttr.href.length > 0 && cssAttr.href != rootUrl.href) {
+      cssUrls.push(normalizeURL(cssAttr.href, rootUrl.href));
+    }
+  });
+  $('script').each((i, elem) => {
+    const jsSrc = $(elem).attr() || {};
+    if (jsSrc.src && jsSrc.src.length > 0 && jsSrc.href != rootUrl.href) {
+      jsUrls.push(normalizeURL(jsSrc.src, rootUrl.href));
+    }
+  });
   const imageUrls = allHTML.match(/https?:\/\/[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+(jpg|jpeg|gif|png)/g) || [];
   $('img').each((i, elem) => {
     const imgSrc = $(elem).attr() || {};
-    if (imgSrc.src) {
+    if (imgSrc.src && imgSrc.src.length > 0 && imgSrc.src != rootUrl.href) {
       imageUrls.push(normalizeURL(imgSrc.src, rootUrl.href));
     }
   });
   const bgCSSUrls = allHTML.match(/url\(["']?([^"']*)["']?\)/g);
   for (const bgCSSUrl of bgCSSUrls) {
     const bgUrl = bgCSSUrl.replace(/(url\(|\)|")/g, '');
-    if (!bgUrl && bgUrl.length > 0) {
+    if (!bgUrl && bgUrl.length > 0 && bgUrl.src != rootUrl.href) {
       imageUrls.push(normalizeURL(bgUrl, rootUrl.href));
     }
   }
@@ -66,6 +81,8 @@ export async function analize(urlString: string) {
     phoneNumbers: uniq(phoneNumbers),
     addresses: uniq(addresses),
     linkUrls: uniq(linkUrls),
+    cssUrls: uniq(cssUrls),
+    jsUrls: uniq(jsUrls),
     imageUrls: uniq(imageUrls),
     mailAddresses: uniq(mailAddresses),
   };

@@ -12,7 +12,9 @@ export function normalizeURL(srcURLString: string, orgURLString: string): string
   if (!aUrl.protocol) {
     const rootUrl = addressableUrl.parse(orgURLString);
     let fullUrl = '';
-    if (aUrl.href.startsWith('/')) {
+    if (aUrl.href.startsWith('//')) {
+      fullUrl = rootUrl.protocol + aUrl.href;
+    } else if (aUrl.href.startsWith('/')) {
       fullUrl = rootUrl.protocol + '//' + rootUrl.host + aUrl.href;
     } else if (aUrl.href.startsWith('./')) {
       fullUrl = path.dirname(rootUrl.href) + '/' + path.basename(aUrl.href);
