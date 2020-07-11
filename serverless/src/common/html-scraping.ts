@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { isURL, normalizeURL } from './util';
 import cheerio, { CheerioStatic } from 'cheerio';
-import { uniq } from 'lodash';
+import { uniq, concat, difference } from 'lodash';
 import { phoneNumberRegExp, japanAddressRegExp, symbolList } from './regexp-components';
 const addressableUrl = require('url');
 
@@ -15,7 +15,7 @@ export async function analize(urlString: string) {
   $('a').each((i, elem) => {
     const aTag = $(elem).attr() || {};
     // javascript:void(0) みたいなリンクは弾く
-    if (aTag.href && !aTag.href.startsWith("javascript:")) {
+    if (aTag.href && !aTag.href.startsWith('javascript:')) {
       const aUrl = addressableUrl.parse(normalizeURL(aTag.href, rootUrl.href));
       // 普通のリンク
       if (aUrl.protocol === 'http:' || aUrl.protocol === 'https:') {
@@ -57,38 +57,74 @@ export async function analize(urlString: string) {
       cssUrls.push(normalizeURL(cssAttr.href, rootUrl.href));
     }
   });
+  const uniqCSSURLs = uniq(cssUrls);
   $('script').each((i, elem) => {
     const jsSrc = $(elem).attr() || {};
     if (jsSrc.src && jsSrc.src.length > 0 && jsSrc.href != rootUrl.href) {
       jsUrls.push(normalizeURL(jsSrc.src, rootUrl.href));
     }
   });
-  const imageUrls = allHTML.match(/https?:\/\/[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+(jpg|jpeg|gif|png)/g) || [];
+  const uniqJsUrls = uniq(jsUrls);
+  const imageUrls: string[] = [];
   $('img').each((i, elem) => {
     const imgSrc = $(elem).attr() || {};
     if (imgSrc.src && imgSrc.src.length > 0 && imgSrc.src != rootUrl.href) {
       imageUrls.push(normalizeURL(imgSrc.src, rootUrl.href));
     }
   });
-  const bgCSSUrls = allHTML.match(/url\(["']?([^"']*)["']?\)/g);
-  for (const bgCSSUrl of bgCSSUrls) {
-    const bgUrl = bgCSSUrl.replace(/(url\(|\)|")/g, '');
-    if (!bgUrl && bgUrl.length > 0 && bgUrl.src != rootUrl.href) {
-      imageUrls.push(normalizeURL(bgUrl, rootUrl.href));
-    }
-  }
+  imageUrls.push(...scrapeImageURL(allHTML));
+  imageUrls.push(...scrapeCSSURL(allHTML, rootUrl.href));
+  /*
+  await Promise.all(
+    concat(uniqCSSURLs, uniqJsUrls).map(async (textUrl) => {
+      const subUrlImageUrls: string[] = [];
+      const responseText = await loadText(textUrl);
+      subUrlImageUrls.push(...scrapeImageURL(responseText));
+      subUrlImageUrls.push(...scrapeCSSURL(responseText, textUrl));
+      imageUrls.push(...subUrlImageUrls);
+      return subUrlImageUrls;
+    }),
+  );
+  */
   return {
     phoneNumbers: uniq(phoneNumbers),
     addresses: uniq(addresses),
     linkUrls: uniq(linkUrls),
-    cssUrls: uniq(cssUrls),
-    jsUrls: uniq(jsUrls),
+    cssUrls: uniqCSSURLs,
+    jsUrls: uniqJsUrls,
     imageUrls: uniq(imageUrls),
     mailAddresses: uniq(mailAddresses),
   };
 }
 
+function scrapeCSSURL(text: string, rootUrl: string): string[] {
+  const allBgUrls: string[] = [];
+  const bgCSSUrls = text.match(/url\(["']?([\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]*)["']?\)/g) || [];
+  for (const bgCSSUrl of bgCSSUrls) {
+    const bgUrl = bgCSSUrl.replace(/(url\(|\)|")/g, '');
+    if (bgUrl && bgUrl.length > 0 && bgUrl != rootUrl) {
+      allBgUrls.push(normalizeURL(bgUrl, rootUrl));
+    }
+  }
+  console.log({ rootUrl, bgCSSUrls, allBgUrls });
+
+  return allBgUrls;
+}
+
+function scrapeImageURL(text: string): string[] {
+  const imageUrls: string[] = text.match(/https?:\/\/[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+(jpg|jpeg|gif|png)/g) || [];
+  return imageUrls;
+}
+
 async function loadAndParseHTMLfromCheerio(url: string): CheerioStatic {
+  const responseText = await loadText(url);
+  return cheerio.load(responseText);
+}
+
+async function loadText(url: string): string {
   const response = await axios.get(url);
-  return cheerio.load(response.data.normalize('NFKC'));
+  if (typeof response.data === 'string') {
+    return response.data.normalize('NFKC');
+  }
+  return JSON.stringify(response.data).normalize('NFKC');
 }
